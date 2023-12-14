@@ -1,0 +1,28 @@
+  .center-text {
+    text-align: center;
+  }
+
+  .light {
+    color: white;
+  }
+
+  .ranger-padding {
+    padding-top: 28px
+  }
+  
+  .title-style {
+    margin-left: 20px;
+    padding-left: 0px;
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  .title-inputs {
+    margin-top: 20px;
+    font-size: 1.5em;
+  }
+
+  .input-style {
+    margin-left: 30px;
+    width: 80%;
+  }
