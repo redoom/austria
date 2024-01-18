@@ -19,7 +19,7 @@ const Tab2: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(0); 
   
-  const [isMobile] = useState(window.innerWidth <= 768); 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); 
 
   const [year, setYear] = useState(2022);
 
@@ -58,7 +58,7 @@ const Tab2: React.FC = () => {
       bottom: '5%',
       top: '5%',
       left: '10%',
-      right: '10%',
+      right: isMobile ? '20%' : '10%',
     },
     legend: { textStyle: { color: '#EFEFEF' } },
     colors: ['#5C9BA0', '#BE6B7D'],
@@ -82,6 +82,12 @@ const Tab2: React.FC = () => {
     "Reflects the average number of children born per woman. A higher birth rate can result in a younger population, influencing long-term economic and social dynamics. A lower birth rate might lead to an aging population and increased dependency ratios.", 
     "Indicates the frequency of deaths within a population. A lower death rate typically correlates with higher life expectancy, affecting the population's age structure. Changes in the death rate can significantly impact population growth and demographic trends."
   ]
+
+  useEffect(() => {
+    if (window.innerWidth) {
+      setIsMobile(window.innerWidth <= 768)
+    }
+  }, [window.innerWidth]);
 
   useEffect(() => {
     if (selectedCountry) {
@@ -158,7 +164,37 @@ const Tab2: React.FC = () => {
     setDeathRate(e.detail.value);
   };
 
+  const totalPensionAmount = () => {
+    const Pensioners = pensionersCount()
+    return Pensioners * payout
+  }
+  
+  const pensionersCount = () => {
+    let totalPensioners = 0;
+    for (let i = retirementAge; i < 101; i++) {
+      // @ts-ignore
+      totalPensioners = totalPensioners + actualData[retirementAge][1] - actualData[retirementAge][2]
+    }
+    return totalPensioners
+  }
 
+  const workersCount = () => {
+    let totalworkers = 0;
+    for (let i = 20; i < retirementAge; i++) {
+      // @ts-ignore
+      totalworkers = totalworkers + actualData[retirementAge][1] - actualData[retirementAge][2]
+    }
+    return totalworkers
+  }
+
+  useEffect(() => {
+    if (actualData) {
+      const pensionAmount = totalPensionAmount()
+      const workers = workersCount()
+      // console.log(pensionAmount / workers)
+    }
+
+  }, [actualData]);
   
    
   // animation 
@@ -279,14 +315,16 @@ const Tab2: React.FC = () => {
                 </IonCol>
               </IonRow>
               <IonRow>
+                <IonCol size-sm="12">
                 <Chart
-                    chartType="BarChart"
-                    data={actualData}
-                    options={options}
-                    width={dimensions.width}
-                    height={dimensions.height}
-                    legendToggle
+                  chartType="BarChart"
+                  data={actualData}
+                  options={options}
+                  width={dimensions.width}
+                  height={dimensions.height}
+                  legendToggle
                   />
+                </IonCol>
               </IonRow>
             </IonCol>}
 
