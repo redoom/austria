@@ -17,6 +17,19 @@
     font-size: 1.2em;
   }
 
+  .title-mobil {
+    margin-left: 20px;
+    padding-left: 0px;
+    margin-top: 20px;
+    font-size: 1.6em;
+  }
+
+  .custom-select {
+    margin-left: 20px;
+    font-size: 1.6em;
+    margin-bottom: 20px;
+  }
+
   .title-inputs {
     margin-top: 20px;
     font-size: 1.5em;
@@ -26,3 +39,41 @@
     margin-left: 30px;
     width: 80%;
   }
+
+  .slider{
+    margin-left: 20px;
+    margin-right: 20px;
+
+  }
+
+  .mobil-title{
+    font-size: x-large ;
+  }
+
+  .mobil-slider{
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 30px;
+  }
+
+
+  .button{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.direction-button{
+    background-color: #6c6d6f; /* Blue color for back button */
+    box-shadow: 0 2px 4px rgba(108, 109, 111, 0.5);
+    width: 100%; 
+    margin-bottom: 20px;
+}
+
+
+
