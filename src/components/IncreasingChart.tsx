@@ -39,6 +39,7 @@ const IncreasingChart = ( increasePercentage ) => {
     };
 
     return (
+        <div style={{height:"300px"}}>
         <Chart
             chartType="LineChart"
             width="100%"
@@ -46,6 +47,8 @@ const IncreasingChart = ( increasePercentage ) => {
             data={data}
             options={options}
         />
+        </div>
+
     );
 };
 

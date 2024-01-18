@@ -39,13 +39,15 @@ const StraightChart = ( decreasePercentage ) => {
     };
 
     return (
-        <Chart
-            chartType="LineChart"
-            width="100%"
-            height="300px"
-            data={data}
-            options={options}
-        />
+        <div style={{height:"300px"}}>
+            <Chart
+                chartType="LineChart"
+                width="100%"
+                height="300px"
+                data={data}
+                options={options}
+            />
+        </div>
     );
 };
 

@@ -7,13 +7,17 @@
   }
 
   .ranger-padding {
-    padding-top: 28px
+    padding-top: 39px
+  }
+
+  .ranger-padding-icon {
+    padding-top: 31px
   }
   
   .title-style {
     margin-left: 20px;
     padding-left: 0px;
-    margin-top: 20px;
+    margin-top: 15px;
     font-size: 1.2em;
   }
 
@@ -75,5 +79,15 @@
     margin-bottom: 20px;
 }
 
+.mobil-range{
+  padding-top: 0px;
+}
+
+.ranger-padding-mobil-icon{
+  padding-top: 5px;
+}
+.ranger-padding-mobil{
+  padding-top: 12px;
+}
 
 

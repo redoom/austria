@@ -215,8 +215,8 @@ const Tab2: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            {/* chart */}
-            {(!isMobile || currentStep === 6) && 
+            {/* chart pc */}
+            {!isMobile  && 
             <IonCol sizeXs="12" size-md="8" ref={elementWidthRef}>
               <IonRow>
                 <Chart
@@ -231,8 +231,8 @@ const Tab2: React.FC = () => {
               <IonRow>
                 <IonCol className="center-text" size-sm="12" size-md="2">
                   {isAnimating ?
-                  <IonIcon className='ranger-padding' color="primary" onClick={stopAnimation} icon={stopCircle} size="large"></IonIcon>:
-                  <IonIcon className='ranger-padding' color="primary" onClick={startAnimation} icon={playCircle} size="large"></IonIcon>}
+                  <IonIcon className='ranger-padding-icon' color="primary" onClick={stopAnimation} icon={stopCircle} size="large"></IonIcon>:
+                  <IonIcon className='ranger-padding-icon' color="primary" onClick={startAnimation} icon={playCircle} size="large"></IonIcon>}
                 </IonCol>
                 <IonCol size-sm="12" size-md="8">
                     <IonRange
@@ -251,9 +251,48 @@ const Tab2: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonCol>}
+
+            {/* Chart mobile */}
+            {(isMobile && currentStep === 6) && 
+            <IonCol sizeXs="12" size-md="8" ref={elementWidthRef}>
+              <IonRow>
+                <IonCol className="center-text" size-sm="12" size-md="2">
+                  {isAnimating ?
+                  <IonIcon className='ranger-padding-mobil-icon' color="primary" onClick={stopAnimation} icon={stopCircle} size="large"></IonIcon>:
+                  <IonIcon className='ranger-padding-mobil-icon' color="primary" onClick={startAnimation} icon={playCircle} size="large"></IonIcon>}
+                </IonCol>
+                <IonCol size-sm="12" size-md="8">
+                    <IonRange
+                    className='mobil-range'
+                      min={1950}
+                      max={2100}
+                      step={1}
+                      value={year}
+                      onIonChange={changeRangeYear}
+                      pin={true}
+                      snaps={true}
+                      disabled={isAnimating}
+                    />
+                </IonCol>
+                <IonCol size-sm="12" size-md="2">
+                  <div className="center-text ranger-padding-mobil">{year}</div>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <Chart
+                    chartType="BarChart"
+                    data={actualData}
+                    options={options}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    legendToggle
+                  />
+              </IonRow>
+            </IonCol>}
+
+            {/* Input section */}
             <IonCol size-sm="12" size-md="4">
               {!isMobile  && <IonTitle className="title-inputs">Inputs: </IonTitle>}
-
 
               {/* welcome mobil */}
               {(isMobile && currentStep === 0) &&
@@ -289,22 +328,21 @@ const Tab2: React.FC = () => {
               </IonRow>
               }
 
-
-
-
-
-
-
-
               {/* Retirement age desktop */}
               {!isMobile  && <IonRow>
                 <IonCol>
                   <IonTitle className="title-style">Retirement age</IonTitle>
-                  <IonInput
-                    className='input-style'
+                  <IonRange
+                    className='slider'
+                    min={50}
+                    max={80}
+                    step={1}
+                    pinFormatter={(value: number) => `${value}`}
                     value={retirementAge}
-                    placeholder="Enter payout for pensioners"
                     onIonChange={handleRetiremnetChange}
+                    pin={true}
+                    snaps={true}
+                    disabled={isAnimating}
                   />
                 </IonCol>
               </IonRow>}
@@ -354,11 +392,17 @@ const Tab2: React.FC = () => {
               {!isMobile && <IonRow>
                 <IonCol>
                   <IonTitle className="title-style">Payout for pensioners</IonTitle>
-                  <IonInput
-                    className='input-style'
+                  <IonRange
+                    className='slider'
+                    min={10000}
+                    max={40000}
+                    step={1000}
+                    pinFormatter={(value: number) => `${value}`}
                     value={payout}
-                    placeholder="Enter payout for pensioners"
                     onIonChange={handlePayoutChange}
+                    pin={true}
+                    snaps={true}
+                    disabled={isAnimating}
                   />
                 </IonCol>
               </IonRow>}
