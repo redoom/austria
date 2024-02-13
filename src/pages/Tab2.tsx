@@ -1,11 +1,12 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonPage, IonRange, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonPage, IonRange, IonRow, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab2.css';
 import { Chart  } from "react-google-charts";
 import { useEffect, useRef, useState } from 'react';
 // import Dataset from "../data/dataset";
-import Dataset from '../data/data.json';
-import { playCircle, stopCircle } from 'ionicons/icons';
+// import Dataset from '../data/data.json';
+import popPyramids from '../data/popPyramids.json';
+import { playCircle, stopCircle, } from 'ionicons/icons';
 import { calculations } from '../util/Calculations'
 import DecreasingChart from '../components/DecreasingChart';
 import IncreasingChart from '../components/IncreasingChart';
@@ -34,9 +35,9 @@ const Tab2: React.FC = () => {
 
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const [actualData, setActualData] = useState(Dataset[2022]);
+  const [actualData, setActualData] = useState(popPyramids["Sweden"][2021]);
 
-  const [dataset, setDataset] = useState({...Dataset});
+  const [dataset, setDataset] = useState({...popPyramids[selectedCountry]});
 
   const [options, setOptions] = useState({
     // title: "Austrian pyramid",
@@ -82,6 +83,16 @@ const Tab2: React.FC = () => {
     "Reflects the average number of children born per woman. A higher birth rate can result in a younger population, influencing long-term economic and social dynamics. A lower birth rate might lead to an aging population and increased dependency ratios.", 
     "Indicates the frequency of deaths within a population. A lower death rate typically correlates with higher life expectancy, affecting the population's age structure. Changes in the death rate can significantly impact population growth and demographic trends."
   ]
+  
+  const [selectedChallenge, setSelectedChallenge] = useState("easy");
+  const [challengeLimit, setChallengeLimit] = useState({Austria: 15000, Germany: 15000, Sweden: 13000, China: 20000, USA: 13000});
+  const challenges = {
+    easy: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry]},
+    medium: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry] + " without changing the Payout for pensioners"},
+    hard: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry] + "  without changing the Payout for pensioners and the Retirement age"}
+  }
+  const [finalResult, setFinalResult] = useState({header: "", reasult: 0, message: ""})
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth) {
@@ -91,7 +102,13 @@ const Tab2: React.FC = () => {
 
   useEffect(() => {
     if (selectedCountry) {
-      const pyramid = JSON.parse(JSON.stringify(Dataset[2022]));
+      setDataset({...popPyramids[selectedCountry]})
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const pyramid = JSON.parse(JSON.stringify(popPyramids[selectedCountry][2022]));
       const data = {
         "country": selectedCountry,
         pyramid,
@@ -107,7 +124,7 @@ const Tab2: React.FC = () => {
       updatePyramidData(newPyramid)
     }
 
-  }, [retirementAge, payout, immigrationRate, birthRate, deathRate]);
+  }, [retirementAge, payout, immigrationRate, birthRate, deathRate, selectedCountry]);
 
   const updateDimensions = () => {
     if (elementHeightRef.current && elementWidthRef.current) {
@@ -129,7 +146,7 @@ const Tab2: React.FC = () => {
       updatedDataset[year] = newPyramid[year];
     }
 
-    // console.log("updatedDataset", updatedDataset)
+    console.log("updatedDataset", updatedDataset)
     setDataset(updatedDataset);
   };
 
@@ -165,15 +182,15 @@ const Tab2: React.FC = () => {
   };
 
   const totalPensionAmount = () => {
-    const Pensioners = pensionersCount()
-    return Pensioners * payout
+    const pensioners = pensionersCount()
+    return pensioners * payout
   }
   
   const pensionersCount = () => {
     let totalPensioners = 0;
     for (let i = retirementAge; i < 101; i++) {
       // @ts-ignore
-      totalPensioners = totalPensioners + actualData[retirementAge][1] - actualData[retirementAge][2]
+      totalPensioners = totalPensioners + dataset[year][i][1] - dataset[year][i][2]
     }
     return totalPensioners
   }
@@ -182,7 +199,7 @@ const Tab2: React.FC = () => {
     let totalworkers = 0;
     for (let i = 20; i < retirementAge; i++) {
       // @ts-ignore
-      totalworkers = totalworkers + actualData[retirementAge][1] - actualData[retirementAge][2]
+      totalworkers = totalworkers + dataset[year][i][1] - dataset[year][i][2]
     }
     return totalworkers
   }
@@ -191,7 +208,7 @@ const Tab2: React.FC = () => {
     if (actualData) {
       const pensionAmount = totalPensionAmount()
       const workers = workersCount()
-      // console.log(pensionAmount / workers)
+      //console.log(pensionAmount / workers)
     }
 
   }, [actualData]);
@@ -220,9 +237,24 @@ const Tab2: React.FC = () => {
     setActualData(dataset[year])
   }
 
+  const calculateResult = () => {
+    const pensionAmount = totalPensionAmount()
+    const workers = workersCount()
+    if (challengeLimit[selectedCountry] > pensionAmount / workers) {
+      setFinalResult({header: "Congratulation you are a winner", reasult: pensionAmount / workers, message: "Well done you succesfully reached your goal. The workers have to pay " + Math.round(pensionAmount / workers) + " € to keep up the pension system"})
+    }
+    else{
+      setFinalResult({header: "Better luck next time", reasult: pensionAmount / workers, message: "Try again to reach the limit(" + challengeLimit[selectedCountry] + "). The workers have to pay " + Math.round(pensionAmount / workers) + " € to keep up the pension system"})
+    }
+  }
+
   useEffect(() => {
     if (year) {
       changeDataset(year)
+      if (year === 2100) {
+        setIsOpen(true);
+        calculateResult()
+      }
     }
   }, [year]);
 
@@ -347,11 +379,19 @@ const Tab2: React.FC = () => {
                   <IonSelect className="custom-select" value={selectedCountry} placeholder="Select One" onIonChange={e => setSelectedCountry(e.detail.value)}>
                     <IonSelectOption value="Austria">Austria</IonSelectOption>
                     <IonSelectOption value="Germany">Germany</IonSelectOption>
-                    <IonSelectOption value="canada">Sweden</IonSelectOption>
-                    <IonSelectOption value="canada">China</IonSelectOption>
-                    <IonSelectOption value="United States of America">USA</IonSelectOption>
-                    {/* Add more options as needed */}
+                    <IonSelectOption value="Sweden">Sweden</IonSelectOption>
+                    <IonSelectOption value="China">China</IonSelectOption>
+                    <IonSelectOption value="USA">USA</IonSelectOption>
                   </IonSelect>
+
+                  <IonText className="title-mobil">Select a challenge</IonText>
+                  
+                  <IonSelect className="custom-select" value={selectedChallenge} placeholder="Difficulty level" onIonChange={e => setSelectedChallenge(e.detail.value)}>
+                    <IonSelectOption value="easy">Easy</IonSelectOption>
+                    <IonSelectOption value="medium">Medium</IonSelectOption>
+                    <IonSelectOption value="hard">Hard</IonSelectOption>
+                  </IonSelect>
+                  <IonCardContent className='no-padding-top'>{challenges[selectedChallenge].descriptions}</IonCardContent>
                   <IonRow>
                     <IonCol size-xs="1"></IonCol>
                     <IonCol size-xs="5">
@@ -672,6 +712,13 @@ const Tab2: React.FC = () => {
             </IonCol>
           </IonRow>
       </IonGrid>
+      {isMobile && <IonAlert
+        isOpen={isOpen}
+        header={finalResult.header}
+        message={finalResult.message}
+        buttons={['Close']}
+        onDidDismiss={() => setIsOpen(false)}
+      ></IonAlert>}
       </IonContent>
     </IonPage>
   );

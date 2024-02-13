@@ -6,7 +6,7 @@ import migrationDistribution from '../data/migrationDistribution.json';
 
 
 export const calculations = (data) => {
-    console.log("calculation", data)
+    // console.log("calculation", data, "dath" , death[data.country])
     let finalPyramidData = {}
         finalPyramidData[2022] = JSON.parse(JSON.stringify(data.pyramid))
         finalPyramidData[2023] = JSON.parse(JSON.stringify(data.pyramid))
@@ -26,7 +26,7 @@ const deathCalculation = (country, deathRate, pyramid, birthRate) => {
             newPyramid[i][j][0] = j
         }
         const newborn = calculateNewborn(country, i, birthRate)
-        newPyramid[i][1] = ['1', newborn / 100 / 200 * 105, - newborn / 100 / 200 * 100]
+        newPyramid[i][1] = ['1', newborn / 200 * 105, - newborn / 200 * 100]
 
         newPyramid[i+1] = JSON.parse(JSON.stringify(newPyramid[i]))
         pyramid[i+1] = JSON.parse(JSON.stringify(newPyramid[i]))
