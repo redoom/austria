@@ -1,0 +1,29 @@
+name: Deploy Ionic App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'  # Use whatever node version your project requires
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Ionic App
+        run: npm run build -- --prod
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages  # The branch the action should deploy to.
+          folder: www  # The folder the action should deploy.
