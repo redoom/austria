@@ -61,7 +61,7 @@ const Tab2: React.FC = () => {
       left: '10%',
       right: isMobile ? '20%' : '10%',
     },
-    legend: { textStyle: { color: '#EFEFEF' } },
+    legend: { textStyle: { color: '#EFEFEF' }, position: 'bottom'},
     colors: ['#5C9BA0', '#BE6B7D'],
     fontSize: 12,
     fontName: 'Arial',
@@ -77,21 +77,21 @@ const Tab2: React.FC = () => {
   const subtitles = ["Introduction", "Pension system", "Pension system", "Population", "Population", "Population"]
   const descriptions = [
     "This interactive tool allows you to explore how various factors like retirement age, pension payouts, and immigration rates impact a country's population dynamics. Adjust settings to see how birth and death rates shape the demographic structure over time. Dive in and discover the intricate balance of a nation's population growth and sustainability! Begin your journey by selecting a country of interest, and embark on an insightful exploration of its population dynamics and demographic changes.",
-    "Defines the age at which individuals are expected to retire. A higher retirement age can extend the working life, reducing the ratio of pensioners to active workers. Adjusting this age impacts the pension system's sustainability and the labor market.",
-    "Represents the amount of money retirees receive regularly. Increasing pension payouts can lead to higher financial obligations for the working population. Conversely, lower payouts may affect the quality of life for pensioners.",
-    "Measures the rate of incoming individuals from other countries. High immigration rates can supplement the workforce and contribute to economic growth. Low immigration rates may lead to a decrease in the labor force and demographic challenges.",
-    "Reflects the average number of children born per woman. A higher birth rate can result in a younger population, influencing long-term economic and social dynamics. A lower birth rate might lead to an aging population and increased dependency ratios.", 
-    "Indicates the frequency of deaths within a population. A lower death rate typically correlates with higher life expectancy, affecting the population's age structure. Changes in the death rate can significantly impact population growth and demographic trends."
+    "The slider starts at the current retirement age of the country. At what age do you think it is appropriate that the average citizen should retire? Remember: Moving the slider changes the ratio of Worker:Pensioner. What do you think is realistic? What do you think is humane and worthy? (Dani: This text you can cut from the back, if you need the space)",
+    "How much do you think the average retiree should get paid out each year? Remember: The money has to be paid by the working population. What do you think is realistic? What do you think is humane and worthy?",
+    "The slider starts at the current (=1) predicted immigration in the country. How much more/less immigration than the current predictions will you allow? (0.5 = half as much as planned, 1.5 = 50% more than planned) Remember: This will influence working population.",
+    "The slider starts at the current (=1) predicted birth rate in the country. How much more/less children than the current predictions do you think will be born? (0.5 = half as much as planned, 1.5 = 50% more than planned) Remember: This will influence working population down the line.", 
+    "The slider starts at the current (=1) predicted deaths in the country. Do you think people will tend to die before the UN prognosis, or later? How might this influence the demographic pyramid?"
   ]
   
   const [selectedChallenge, setSelectedChallenge] = useState("easy");
   const [challengeLimit, setChallengeLimit] = useState({Austria: 15000, Germany: 15000, Sweden: 13000, China: 20000, USA: 13000});
   const challenges = {
-    easy: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry]},
-    medium: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry] + " without changing the Payout for pensioners"},
-    hard: {descriptions: "Reach that a worker has to pay less than " + challengeLimit[selectedCountry] + "  without changing the Payout for pensioners and the Retirement age"}
+    easy: {descriptions: "Can you imagine circumstances where the employed population will pay less than " + challengeLimit[selectedCountry]},
+    medium: {descriptions: "Can you imagine circumstances where the employed population will pay less than " + challengeLimit[selectedCountry] + " per year to fund the retired population, without changing the retirement payout"},
+    hard: {descriptions: "Can you imagine circumstances where the employed population will pay less than " + challengeLimit[selectedCountry] + " per year to fund the retired population, without changing the retirement payout or retirement age?"}
   }
-  const [finalResult, setFinalResult] = useState({header: "", reasult: 0, message: ""})
+  const [finalResult, setFinalResult] = useState({header: "", result: "", message: ""})
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -131,8 +131,16 @@ const Tab2: React.FC = () => {
       const { offsetHeight } = elementHeightRef.current;
       const { offsetWidth } = elementWidthRef.current;
       setDimensions({ width: offsetWidth, height: offsetHeight  * 0.85 });
-      options.height = offsetHeight * 0.85 
-      options.width = offsetWidth
+      if (isMobile) {
+        setDimensions({ width: offsetWidth, height: offsetHeight  * 0.80 });
+        options.height = offsetHeight * 0.80
+        options.width = offsetWidth
+      }
+      else{
+        setDimensions({ width: offsetWidth, height: offsetHeight  * 0.85 });
+        options.height = offsetHeight * 0.85 
+        options.width = offsetWidth
+      }
       setOptions(options)
     }
 
@@ -195,6 +203,15 @@ const Tab2: React.FC = () => {
     return totalPensioners
   }
 
+  const totalPopulationCount = () => {
+    let totalPopulation = 0;
+    for (let i = 1; i < 101; i++) {
+      // @ts-ignore
+      totalPopulation = totalPopulation + dataset[year][i][1] - dataset[year][i][2]
+    }
+    return totalPopulation
+  }
+
   const workersCount = () => {
     let totalworkers = 0;
     for (let i = 20; i < retirementAge; i++) {
@@ -240,11 +257,18 @@ const Tab2: React.FC = () => {
   const calculateResult = () => {
     const pensionAmount = totalPensionAmount()
     const workers = workersCount()
+    const pensioners = pensionersCount()
     if (challengeLimit[selectedCountry] > pensionAmount / workers) {
-      setFinalResult({header: "Congratulation you are a winner", reasult: pensionAmount / workers, message: "Well done you succesfully reached your goal. The workers have to pay " + Math.round(pensionAmount / workers) + " € to keep up the pension system"})
+      setFinalResult({
+        header: "Congratulations!", 
+        result: "Number of workers: " + workers + "<br>Number of pensioners: " + pensioners, 
+        message: "You are a successful ruler of " + selectedCountry + ". Every employed person pays " + Math.round(pensionAmount / workers) + " € to keep the system going. " + (challengeLimit[selectedCountry] - Math.round(pensionAmount / workers)) + " € less than planned."})
     }
     else{
-      setFinalResult({header: "Better luck next time", reasult: pensionAmount / workers, message: "Try again to reach the limit(" + challengeLimit[selectedCountry] + "). The workers have to pay " + Math.round(pensionAmount / workers) + " € to keep up the pension system"})
+      setFinalResult({
+        header: "Oh no!",
+        result: "\nNumber of workers: " + workers + " <br>Number of pensioners: " + pensioners,
+        message: "You are not a successful ruler of  " + selectedCountry + " :( Because of your choices, every working person must pay " + Math.round(pensionAmount / workers) + " € every year. " + ( Math.round(pensionAmount / workers) - challengeLimit[selectedCountry] ) + " € more than planned."})
     }
   }
 
@@ -269,15 +293,15 @@ const Tab2: React.FC = () => {
   
   return (
     <IonPage>
-      <IonHeader>
+      {!isMobile  &&<IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 2</IonTitle>
+          <IonTitle>{selectedCountry + " - " + selectedChallenge}</IonTitle>
         </IonToolbar>
-      </IonHeader>
+      </IonHeader>}
       <IonContent ref={elementHeightRef} fullscreen >
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Tab 2</IonTitle>
+            <IonTitle size="large" className='top-large-margin'>{selectedCountry + " - " + selectedChallenge}</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -347,15 +371,24 @@ const Tab2: React.FC = () => {
                 </IonCol>
               </IonRow>
               <IonRow>
+                <IonCol size-sm="6">
+                    <span>Population: {Math.round(totalPopulationCount())}</span>
+                </IonCol>
+
+                <IonCol size-sm="6">
+                    <span>Pension amout: {Math.round(totalPensionAmount() / workersCount())}</span>
+                </IonCol>
+              </IonRow>
+              <IonRow>
                 <IonCol size-sm="12">
-                <Chart
-                  chartType="BarChart"
-                  data={actualData}
-                  options={options}
-                  width={dimensions.width}
-                  height={dimensions.height}
-                  legendToggle
-                  />
+                  <Chart
+                    chartType="BarChart"
+                    data={actualData}
+                    options={options}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    legendToggle
+                    />
                 </IonCol>
               </IonRow>
             </IonCol>}
@@ -439,7 +472,7 @@ const Tab2: React.FC = () => {
                   <DecreasingChart decreasePercentage={0.1}/>:
                   <IncreasingChart decreasePercentage={0.1}/>}
 
-                  <IonText className="title-style">{titles[currentStep]} input</IonText>
+                  <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": " + retirementAge}</IonText>
                   <IonRange
                     className='mobil-slider'
                     min={50}
@@ -450,7 +483,7 @@ const Tab2: React.FC = () => {
                     onIonChange={handleRetiremnetChange}
                     pin={true}
                     snaps={true}
-                    disabled={isAnimating}
+                    disabled={isAnimating || selectedChallenge === "hard"}
                   />
                   <IonRow>
                     <IonCol size-xs="1"></IonCol>
@@ -500,7 +533,7 @@ const Tab2: React.FC = () => {
                   <DecreasingChart decreasePercentage={0.1}/>:
                   <IncreasingChart decreasePercentage={0.1}/>}
 
-                  <IonText className="title-style">{titles[currentStep]} input</IonText>
+                  <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{payout}</b></IonText>
                   <IonRange
                     className='mobil-slider'
                     min={10000}
@@ -511,7 +544,7 @@ const Tab2: React.FC = () => {
                     onIonChange={handlePayoutChange}
                     pin={true}
                     snaps={true}
-                    disabled={isAnimating}
+                    disabled={isAnimating || selectedChallenge === "medium" || selectedChallenge === "hard"}
                   />
                   <IonRow>
                     <IonCol size-xs="1"></IonCol>
@@ -561,7 +594,7 @@ const Tab2: React.FC = () => {
                     <DecreasingChart decreasePercentage={0.1}/>:
                     <IncreasingChart decreasePercentage={0.1}/>}
 
-                    <IonText className="title-style">{titles[currentStep]} input</IonText>
+                    <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{immigrationRate}</b></IonText>
                     <IonRange
                       className='slider'
                       min={0}
@@ -622,7 +655,7 @@ const Tab2: React.FC = () => {
                     <DecreasingChart decreasePercentage={0.1}/>:
                     <IncreasingChart decreasePercentage={0.1}/>}
 
-                    <IonText className="title-style">{titles[currentStep]} input</IonText>
+                    <IonText className="title-style">{titles[currentStep] + " " +  selectedCountry + ": "} <b>{birthRate}</b></IonText>
                     <IonRange
                       className='slider'
                       min={0.5}
@@ -683,7 +716,7 @@ const Tab2: React.FC = () => {
                     <DecreasingChart decreasePercentage={0.1}/>:
                     <IncreasingChart decreasePercentage={0.1}/>}
 
-                    <IonText className="title-style">{titles[currentStep]} input</IonText>
+                    <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{deathRate}</b></IonText>
                     <IonRange
                       className='slider'
                       min={0}
@@ -715,7 +748,7 @@ const Tab2: React.FC = () => {
       {isMobile && <IonAlert
         isOpen={isOpen}
         header={finalResult.header}
-        message={finalResult.message}
+        message={finalResult.message + finalResult.result}
         buttons={['Close']}
         onDidDismiss={() => setIsOpen(false)}
       ></IonAlert>}

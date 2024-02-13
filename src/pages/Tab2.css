@@ -84,11 +84,11 @@
 }
 
 .ranger-padding-mobil-icon{
-  padding-top: 5px;
+  padding-top: 0px;
 }
 
 .ranger-padding-mobil{
-  padding-top: 12px;
+  padding-top: 7px;
 }
 
 .mobil-chart {
@@ -98,5 +98,10 @@
 .no-padding-top {
   padding-top: 0px;
 }
+
+.top-large-margin {
+  margin-top: 20px;
+}
+
 
 
