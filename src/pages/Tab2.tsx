@@ -8,9 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import popPyramids from '../data/popPyramids.json';
 import { playCircle, stopCircle, } from 'ionicons/icons';
 import { calculations } from '../util/Calculations'
-import DecreasingChart from '../components/DecreasingChart';
-import IncreasingChart from '../components/IncreasingChart';
-import StraightChart from '../components/StraightChart';
+import BarChartComponent from '../components/BarChartComponent';
 
 const Tab2: React.FC = () => {
 
@@ -465,12 +463,10 @@ const Tab2: React.FC = () => {
                     <IonCardTitle>{titles[currentStep]}</IonCardTitle>
                     <IonCardSubtitle>{subtitles[currentStep]}</IonCardSubtitle>
                   </IonCardHeader>
-                  <IonCardContent>{descriptions[currentStep]}</IonCardContent>
 
-                  {retirementAge === 65 ? <StraightChart />: 
-                  retirementAge < 65 ?
-                  <DecreasingChart decreasePercentage={0.1}/>:
-                  <IncreasingChart decreasePercentage={0.1}/>}
+                  <IonCardContent className='no-padding-bottom'>{descriptions[currentStep]}</IonCardContent>
+
+                  <BarChartComponent originalValue={65} actualValue={retirementAge} />
 
                   <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": " + retirementAge}</IonText>
                   <IonRange
@@ -526,12 +522,10 @@ const Tab2: React.FC = () => {
                     <IonCardTitle>{titles[currentStep]}</IonCardTitle>
                     <IonCardSubtitle>{subtitles[currentStep]}</IonCardSubtitle>
                   </IonCardHeader>
-                  <IonCardContent>{descriptions[currentStep]}</IonCardContent>
+                  
+                  <IonCardContent className='no-padding-bottom'>{descriptions[currentStep]}</IonCardContent>
 
-                  {payout === 25000 ? <StraightChart />: 
-                  payout < 25000 ?
-                  <DecreasingChart decreasePercentage={0.1}/>:
-                  <IncreasingChart decreasePercentage={0.1}/>}
+                  <BarChartComponent originalValue={25000} actualValue={payout} />
 
                   <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{payout}</b></IonText>
                   <IonRange
@@ -587,12 +581,10 @@ const Tab2: React.FC = () => {
                       <IonCardTitle>{titles[currentStep]}</IonCardTitle>
                       <IonCardSubtitle>{subtitles[currentStep]}</IonCardSubtitle>
                     </IonCardHeader>
-                    <IonCardContent>{descriptions[currentStep]}</IonCardContent>
+                     
+                    <IonCardContent className='no-padding-bottom'>{descriptions[currentStep]}</IonCardContent>
 
-                    {immigrationRate === 1 ? <StraightChart />: 
-                    immigrationRate < 1 ?
-                    <DecreasingChart decreasePercentage={0.1}/>:
-                    <IncreasingChart decreasePercentage={0.1}/>}
+                    <BarChartComponent originalValue={1} actualValue={immigrationRate} />
 
                     <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{immigrationRate}</b></IonText>
                     <IonRange
@@ -648,12 +640,10 @@ const Tab2: React.FC = () => {
                       <IonCardTitle>{titles[currentStep]}</IonCardTitle>
                       <IonCardSubtitle>{subtitles[currentStep]}</IonCardSubtitle>
                     </IonCardHeader>
-                    <IonCardContent>{descriptions[currentStep]}</IonCardContent>
 
-                    {birthRate === 1 ? <StraightChart />: 
-                    birthRate < 1 ?
-                    <DecreasingChart decreasePercentage={0.1}/>:
-                    <IncreasingChart decreasePercentage={0.1}/>}
+                    <IonCardContent className='no-padding-bottom'>{descriptions[currentStep]}</IonCardContent>
+
+                    <BarChartComponent originalValue={1} actualValue={birthRate} />
 
                     <IonText className="title-style">{titles[currentStep] + " " +  selectedCountry + ": "} <b>{birthRate}</b></IonText>
                     <IonRange
@@ -709,12 +699,10 @@ const Tab2: React.FC = () => {
                       <IonCardTitle>{titles[currentStep]}</IonCardTitle>
                       <IonCardSubtitle>{subtitles[currentStep]}</IonCardSubtitle>
                     </IonCardHeader>
-                    <IonCardContent>{descriptions[currentStep]}</IonCardContent>
 
-                    {deathRate === 1 ? <StraightChart />: 
-                    deathRate < 1 ?
-                    <DecreasingChart decreasePercentage={0.1}/>:
-                    <IncreasingChart decreasePercentage={0.1}/>}
+                    <IonCardContent className='no-padding-bottom'>{descriptions[currentStep]}</IonCardContent>
+
+                    <BarChartComponent originalValue={1} actualValue={deathRate} />
 
                     <IonText className="title-style">{titles[currentStep] + " " + selectedCountry + ": "} <b>{deathRate}</b></IonText>
                     <IonRange
@@ -748,7 +736,7 @@ const Tab2: React.FC = () => {
       {isMobile && <IonAlert
         isOpen={isOpen}
         header={finalResult.header}
-        message={finalResult.message + finalResult.result}
+        message={finalResult.message}
         buttons={['Close']}
         onDidDismiss={() => setIsOpen(false)}
       ></IonAlert>}

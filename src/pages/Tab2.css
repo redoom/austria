@@ -99,6 +99,10 @@
   padding-top: 0px;
 }
 
+.no-padding-bottom {
+  padding-bottom: 0px;
+}
+
 .top-large-margin {
   margin-top: 20px;
 }
